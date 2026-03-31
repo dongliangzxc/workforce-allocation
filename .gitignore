@@ -1,14 +1,11 @@
-# Comate specs (local planning docs)
-../.comate/
-
-# AI assistant local configs
-../.claude/
-
 # Dependencies
 node_modules/
 
 # Build output
 dist/
+
+# AI assistant local configs
+.claude/
 
 # Logs
 *.log
