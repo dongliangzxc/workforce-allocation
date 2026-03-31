@@ -201,4 +201,17 @@ export const useAppStore = create((set, get) => ({
         persistHistory(next);
         set({history: next});
     },
+
+    // ─── Import / Export ─────────────────────────────────────────────────────
+    importData: (data) => set((state) => {
+        const patch = {
+            members:      Array.isArray(data.members)      ? data.members      : [],
+            requirements: Array.isArray(data.requirements) ? data.requirements : [],
+            allocations:  Array.isArray(data.allocations)  ? data.allocations  : [],
+            weekLabel:    data.weekLabel    || defaultWeekLabel(),
+            llmSummary:   data.llmSummary   || '',
+        };
+        persist(patch, state);
+        return patch;
+    }),
 }));

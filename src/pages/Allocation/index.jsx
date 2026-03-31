@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sparkles, Trash2, AlertCircle, Info } from 'lucide-react';
+import { Sparkles, Trash2, AlertCircle, Info, GanttChartSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAppStore } from '../../store/useAppStore.js';
 import { autoAllocate } from '../../utils/allocation.js';
@@ -107,6 +107,14 @@ export default function Allocation() {
                     <p className="text-sm text-muted-foreground mt-0.5">LLM 智能分配 · 手动微调 · 实时校验</p>
                 </div>
                 <div className="flex gap-2">
+                    <button
+                        className="btn-secondary"
+                        onClick={() => navigate('/gantt')}
+                        disabled={allocations.length === 0}
+                        title="查看甘特图并导出 PNG"
+                    >
+                        <GanttChartSquare size={14} />甘特图
+                    </button>
                     <button
                         className="btn-danger"
                         onClick={clearAllocations}

@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { buildGanttData } from '../utils/gantt.js';
 import { cn } from '@utils/cn.js';
 
@@ -15,8 +15,9 @@ const COL_GAP = 2;
  *   members: import('../types/index.js').Member[],
  *   weekLabel: string,
  * }} props
+ * @param ref - 通过 ref.exportPng(filename) 可下载 PNG
  */
-export default function GanttChart({allocations, requirements, members, weekLabel}) {
+const GanttChart = forwardRef(function GanttChart({allocations, requirements, members, weekLabel}, ref) {
     const [tooltip, setTooltip] = useState(null); // { x, y, content }
     const svgRef = useRef(null);
 
@@ -49,6 +50,35 @@ export default function GanttChart({allocations, requirements, members, weekLabe
         });
     };
     const hideTooltip = () => setTooltip(null);
+
+    useImperativeHandle(ref, () => ({
+        exportPng(filename = 'gantt.png') {
+            const svg = svgRef.current;
+            if (!svg) return;
+            const width = svg.width.baseVal.value;
+            const height = svg.height.baseVal.value;
+            const xml = new XMLSerializer().serializeToString(svg);
+            const blob = new Blob([xml], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = width * 2;
+                canvas.height = height * 2;
+                const ctx = canvas.getContext('2d');
+                ctx.scale(2, 2);
+                ctx.drawImage(img, 0, 0);
+                URL.revokeObjectURL(url);
+                canvas.toBlob(b => {
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(b);
+                    a.download = filename;
+                    a.click();
+                }, 'image/png');
+            };
+            img.src = url;
+        },
+    }));
 
     if (members.length === 0) {
         return (
@@ -236,4 +266,6 @@ export default function GanttChart({allocations, requirements, members, weekLabe
             )}
         </div>
     );
-}
+});
+
+export default GanttChart;

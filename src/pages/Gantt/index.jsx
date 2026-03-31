@@ -1,4 +1,5 @@
-import { GanttChartSquare } from 'lucide-react';
+import { useRef } from 'react';
+import { GanttChartSquare, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAppStore } from '../../store/useAppStore.js';
 import GanttChart from '../../components/GanttChart.jsx';
@@ -6,8 +7,14 @@ import { useNavigate } from 'react-router';
 
 export default function Gantt() {
     const navigate = useNavigate();
+    const ganttRef = useRef(null);
     const { requirements, members, allocations, weekLabel } = useAppStore();
     const hasData = allocations.length > 0 && members.length > 0;
+
+    const handleExport = () => {
+        const filename = `gantt-${weekLabel.replace(/\s/g, '')}.png`;
+        ganttRef.current?.exportPng(filename);
+    };
 
     return (
         <div className="p-8 max-w-6xl mx-auto">
@@ -26,6 +33,14 @@ export default function Gantt() {
                         <p className="text-sm text-muted-foreground">{weekLabel} · 工作日安排可视化</p>
                     </div>
                 </div>
+                <button
+                    className="btn-secondary"
+                    onClick={handleExport}
+                    disabled={!hasData}
+                    title="下载甘特图 PNG"
+                >
+                    <Download size={14} />导出 PNG
+                </button>
             </motion.div>
 
             {/* No data */}
@@ -48,6 +63,7 @@ export default function Gantt() {
                     {/* Chart */}
                     <div className="card p-5 overflow-hidden">
                         <GanttChart
+                            ref={ganttRef}
                             allocations={allocations}
                             requirements={requirements}
                             members={members}
