@@ -1,0 +1,27 @@
+# Comate specs (local planning docs)
+../.comate/
+
+# AI assistant local configs
+../.claude/
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Logs
+*.log
+*.txt
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Local env files (if added in future)
+.env
+.env.local
+.env.*.local
